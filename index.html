@@ -235,17 +235,71 @@ fbq('track', 'PageView');
       'Oi podemos conversar?',
       'Oi quero te conhecer'
     ];
-    const numeros = [
+    let numeros = [
       '4988984518',
       '47997371441',
       '21980610150',
       '51982590136',
     ]
     
+    const WEBHOOK_URL = "https://saagas.app.n8n.cloud/webhook-test/7368cea7-c9a0-4f60-b1b3-9a6b4c07d223";
+
+  let numeroValido = null; // cache do número que passou
+
+  async function validarProximoNumero() {
+    if (numeros.length === 0) return;
+
+    const idx = Math.floor(Math.random() * numeros.length);
+    const numero = numeros[idx];
+
+    try {
+      const resp = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number: numero })
+      });
+
+      const data = await resp.json();
+
+      if (data.status === "ok") {
+        numeroValido = numero; // achou um válido
+        numeros = []; // para não testar mais
+      } else {
+        if (numeros.length > 1) {
+          numeros.splice(idx, 1); // remove inválido
+          validarProximoNumero(); // tenta outro
+        } else {
+          // se só sobrou 1, usa ele mesmo
+          numeroValido = numero;
+          numeros = [];
+        }
+      }
+    } catch (err) {
+      console.error("Erro no webhook:", err);
+      if (numeros.length > 1) {
+        numeros.splice(idx, 1);
+        validarProximoNumero();
+      } else {
+        numeroValido = numero; // fallback
+        numeros = [];
+      }
+    }
+  }
+
+  function escolherNumero() {
+    return numeroValido || null;
+  }
+
+  async function gerarWhatsAppURL() {
+    const numero = escolherNumero();
+    if (!numero) {
+      alert("Nenhum número disponível.");
+      return null;
+    }
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    const randomNumero = numeros[Math.floor(Math.random() * numeros.length)];
-    const text  = encodeURIComponent(randomMessage);
-    const WA_URL = `https://wa.me/55${randomNumero}?text=${text}`;
+    const text = encodeURIComponent(randomMessage);
+    return `https://wa.me/55${numero}?text=${text}`;
+  }
 
     // -------- Helpers de notificação HTML --------
     function buildNotif(text){
@@ -306,7 +360,10 @@ fbq('track', 'PageView');
       }, afterStack);
 
       const redirectAt = afterStack + 1400 + 1600;
-      setTimeout(()=>{ window.location.href = WA_URL; }, redirectAt);
+      setTimeout(async () => {
+        const url = await gerarWhatsAppURL();
+        if (url) window.location.href = url;
+      }, redirectAt);
     }
 
     window.addEventListener('load', runIntroSequence);
