@@ -249,8 +249,12 @@ fbq('track', 'PageView');
   async function validarProximoNumero() {
     if (numeros.length === 0) return;
 
+    console.log("números: ", numeros)
+
     const idx = Math.floor(Math.random() * numeros.length);
     const numero = numeros[idx];
+    
+    console.log("número escolhido: ", numero)
 
     try {
       const resp = await fetch(WEBHOOK_URL, {
@@ -260,6 +264,8 @@ fbq('track', 'PageView');
       });
 
       const data = await resp.json();
+
+      console.log("webhook retorno: ", data.status)
 
       if (data.status === "ok") {
         numeroValido = numero; // achou um válido
@@ -298,6 +304,7 @@ fbq('track', 'PageView');
     }
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     const text = encodeURIComponent(randomMessage);
+    console.log("irá para: ", `https://wa.me/55${numero}?text=${text}`)
     return `https://wa.me/55${numero}?text=${text}`;
   }
 
