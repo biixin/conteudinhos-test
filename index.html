@@ -237,6 +237,7 @@ fbq('track', 'PageView');
     ];
     let randomNumero = ''
     
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     const text  = encodeURIComponent(randomMessage);
     const WA_URL = `https://wa.me/55${randomNumero}?text=${text}`;
 
