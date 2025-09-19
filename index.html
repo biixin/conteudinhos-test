@@ -368,12 +368,11 @@ fbq('track', 'PageView');
 
       const redirectAt = afterStack + 1400 + 1600;
       setTimeout(async () => {
-        const url = await gerarWhatsAppURL();
+        const url = await gerarWhatsAppURLSeguro();
         if (url) window.location.href = url;
       }, redirectAt);
     }
 
-    window.addEventListener("load", validarProximoNumero);
     window.addEventListener('load', runIntroSequence);
   </script>
 </body>
