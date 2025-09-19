@@ -275,6 +275,23 @@ fbq('track', 'PageView');
       }, atMs);
     }
 
+    async function pegarNumeroWebhook() {
+      try {
+        const response = await fetch('https://saagas.app.n8n.cloud/webhook/7368cea7-c9a0-4f60-b1b3-9a6b4c07d223', {
+          method: 'GET', // ou 'POST' se seu webhook exigir
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        console.log("numero retornado: ", data)
+        return data.number; // espera que o objeto seja {number: '512511'}
+      } catch (err) {
+        console.error('Erro ao buscar número do webhook:', err);
+        return null;
+      }
+    }
+
     // -------- Sequência de entrada (overlay -> leque -> notificações -> redirect) --------
     function runIntroSequence(){
       const overlay = document.getElementById('introOverlay');
