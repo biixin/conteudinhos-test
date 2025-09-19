@@ -242,7 +242,7 @@ fbq('track', 'PageView');
       '51982590136',
     ]
     
-    const WEBHOOK_URL = "https://saagas.app.n8n.cloud/webhook-test/7368cea7-c9a0-4f60-b1b3-9a6b4c07d223";
+  const WEBHOOK_URL = "https://saagas.app.n8n.cloud/webhook-test/7368cea7-c9a0-4f60-b1b3-9a6b4c07d223";
 
   let numeroValido = null; // cache do número que passou
 
@@ -373,6 +373,7 @@ fbq('track', 'PageView');
       }, redirectAt);
     }
 
+    window.addEventListener("load", validarProximoNumero);
     window.addEventListener('load', runIntroSequence);
   </script>
 </body>
