@@ -320,20 +320,20 @@ fbq('track', 'PageView');
       setTimeout(()=>{ window.location.href = WA_URL; }, redirectAt);
     }
 
+    pegarNumeroWebhook().then(numero => {
+  if (!numero) return console.error('Não foi possível obter o número do webhook');
+
+  // Monta a URL do WhatsApp com o número recebido
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  const text  = encodeURIComponent(randomMessage);
+  WA_URL = `https://wa.me/55${numero}?text=${text}`;
+
+  // Atualiza a função de redirecionamento da sequência
+  window.redirectToWA = () => { window.location.href = WA_URL; };
+});
+
     
-    window.addEventListener('load', async () => {
-      const numero = await pegarNumeroWebhook(); // espera o número do webhook
-      if (!numero) return; // aborta se deu erro
-    
-      // Atualiza o WA_URL com o número recebido
-      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-      const text  = encodeURIComponent(randomMessage);
-      const WA_URL = `https://wa.me/55${numero}?text=${text}`;
-    
-      // Executa a sequência passando o WA_URL
-      console.log("url: ", WA_URL)
-      runIntroSequence(WA_URL);
-    });
+  window.addEventListener('load', runIntroSequence);
   </script>
 </body>
 
