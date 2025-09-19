@@ -321,6 +321,7 @@ fbq('track', 'PageView');
     }
 
     pegarNumeroWebhook().then(numero => {
+      console.log("numerooo: ", numero)
   if (!numero) return console.error('Não foi possível obter o número do webhook');
 
   // Monta a URL do WhatsApp com o número recebido
