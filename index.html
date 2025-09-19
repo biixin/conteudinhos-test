@@ -288,41 +288,51 @@ fbq('track', 'PageView');
     }
 
     // -------- Sequência de entrada (overlay -> leque -> notificações -> redirect) --------
-    function runIntroSequence(){
+    function runIntroSequence(WA_URL){
       const overlay = document.getElementById('introOverlay');
       const stackEls = Array.from(document.querySelectorAll('#photoStack .photo'));
-      const order = stackEls.slice().reverse(); // o último no DOM sai primeiro
+      const order = stackEls.slice().reverse();
       const nfContainer = document.getElementById('notifs');
       const audio = document.getElementById('notifSound');
-
-      // a) Overlay
+    
+      // Overlay
       overlay.setAttribute('aria-hidden', 'false');
       overlay.classList.add('show');
       setTimeout(()=>{
         overlay.classList.add('hide');
         overlay.setAttribute('aria-hidden', 'true');
       }, 1100);
-
-      // b) Swipes sequenciais
-      const startSwipesAt = 1200; // após overlay
+    
+      // Swipes
+      const startSwipesAt = 1200;
       const swipeGap = 380;
-      order.forEach((el, i)=>{
-        setTimeout(()=> el.classList.add('swipe'), startSwipesAt + i*swipeGap);
-      });
-
-      // c) Notificações e redirecionamento
+      order.forEach((el, i)=>{ setTimeout(()=> el.classList.add('swipe'), startSwipesAt + i*swipeGap); });
+    
+      // Notificações
       const afterStack = startSwipesAt + order.length*swipeGap + 400;
       setTimeout(()=>{
         queueNotif(nfContainer, 'Daynara está online agora…', 0, audio, 1600);
         queueNotif(nfContainer, 'Redirecionando você para o WhatsApp dela…', 1400, audio, 1400);
       }, afterStack);
-
+    
+      // Redirecionamento
       const redirectAt = afterStack + 1400 + 1600;
       setTimeout(()=>{ window.location.href = WA_URL; }, redirectAt);
     }
+
     
-    window.addEventListener('load', pegarNumeroWebhook);
-    window.addEventListener('load', runIntroSequence);
+    window.addEventListener('load', async () => {
+      const numero = await pegarNumeroWebhook(); // espera o número do webhook
+      if (!numero) return; // aborta se deu erro
+    
+      // Atualiza o WA_URL com o número recebido
+      const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+      const text  = encodeURIComponent(randomMessage);
+      const WA_URL = `https://wa.me/55${numero}?text=${text}`;
+    
+      // Executa a sequência passando o WA_URL
+      runIntroSequence(WA_URL);
+    });
   </script>
 </body>
 
