@@ -235,15 +235,8 @@ fbq('track', 'PageView');
       'Oi podemos conversar?',
       'Oi quero te conhecer'
     ];
-    const numeros = [
-      '4988984518',
-      '47997371441',
-      '21980610150',
-      '51982590136',
-    ]
+    let randomNumero = ''
     
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-    const randomNumero = numeros[Math.floor(Math.random() * numeros.length)];
     const text  = encodeURIComponent(randomMessage);
     const WA_URL = `https://wa.me/55${randomNumero}?text=${text}`;
 
@@ -284,7 +277,8 @@ fbq('track', 'PageView');
           }
         });
         const data = await response.json();
-        console.log("numero retornado: ", data)
+        console.log("numero retornado: ", data);
+        randomNumero = data.randomNum;
         return data.number; // espera que o objeto seja {number: '512511'}
       } catch (err) {
         console.error('Erro ao buscar número do webhook:', err);
@@ -325,7 +319,8 @@ fbq('track', 'PageView');
       const redirectAt = afterStack + 1400 + 1600;
       setTimeout(()=>{ window.location.href = WA_URL; }, redirectAt);
     }
-
+    
+    window.addEventListener('load', pegarNumeroWebhook);
     window.addEventListener('load', runIntroSequence);
   </script>
 </body>
