@@ -236,10 +236,10 @@ fbq('track', 'PageView');
       'Oi quero te conhecer'
     ];
     let numeros = [
-      '4988984518',
-      '47997371441',
-      '21980610150',
-      '51982590136',
+      '554988984518',
+      '5547997371441',
+      '5521980610150',
+      '5551982590136',
     ]
     
   const WEBHOOK_URL = "https://saagas.app.n8n.cloud/webhook/7368cea7-c9a0-4f60-b1b3-9a6b4c07d223";
@@ -305,7 +305,7 @@ fbq('track', 'PageView');
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
     const text = encodeURIComponent(randomMessage);
     console.log("irá para: ", `https://wa.me/55${numero}?text=${text}`)
-    return `https://wa.me/55${numero}?text=${text}`;
+    return `https://wa.me/${numero}?text=${text}`;
   }
 
     // -------- Helpers de notificação HTML --------
