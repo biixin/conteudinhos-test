@@ -235,9 +235,14 @@ fbq('track', 'PageView');
       'Oi podemos conversar?',
       'Oi quero te conhecer'
     ];
-    let randomNumero = ''
+    const numeros = [
+      '47997371441',
+      '51982590136',
+      '21980610150',
+    ]
     
     const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    const randomNumero = numeros[Math.floor(Math.random() * numeros.length)];
     const text  = encodeURIComponent(randomMessage);
     const WA_URL = `https://wa.me/55${randomNumero}?text=${text}`;
 
@@ -269,72 +274,41 @@ fbq('track', 'PageView');
       }, atMs);
     }
 
-    async function pegarNumeroWebhook() {
-      try {
-        const response = await fetch('https://saagas.app.n8n.cloud/webhook/77d68919-a7d2-400b-aa7c-1d9bc43eeb5b', {
-          method: 'POST', // ou 'POST' se seu webhook exigir
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        const data = await response.json();
-        console.log("numero retornado: ", data);
-        randomNumero = data;
-        return data.number; // espera que o objeto seja {number: '512511'}
-      } catch (err) {
-        console.error('Erro ao buscar número do webhook:', err);
-        return null;
-      }
-    }
-
     // -------- Sequência de entrada (overlay -> leque -> notificações -> redirect) --------
-    function runIntroSequence(WA_URL){
+    function runIntroSequence(){
       const overlay = document.getElementById('introOverlay');
       const stackEls = Array.from(document.querySelectorAll('#photoStack .photo'));
-      const order = stackEls.slice().reverse();
+      const order = stackEls.slice().reverse(); // o último no DOM sai primeiro
       const nfContainer = document.getElementById('notifs');
       const audio = document.getElementById('notifSound');
-    
-      // Overlay
+
+      // a) Overlay
       overlay.setAttribute('aria-hidden', 'false');
       overlay.classList.add('show');
       setTimeout(()=>{
         overlay.classList.add('hide');
         overlay.setAttribute('aria-hidden', 'true');
       }, 1100);
-    
-      // Swipes
-      const startSwipesAt = 1200;
+
+      // b) Swipes sequenciais
+      const startSwipesAt = 1200; // após overlay
       const swipeGap = 380;
-      order.forEach((el, i)=>{ setTimeout(()=> el.classList.add('swipe'), startSwipesAt + i*swipeGap); });
-    
-      // Notificações
+      order.forEach((el, i)=>{
+        setTimeout(()=> el.classList.add('swipe'), startSwipesAt + i*swipeGap);
+      });
+
+      // c) Notificações e redirecionamento
       const afterStack = startSwipesAt + order.length*swipeGap + 400;
       setTimeout(()=>{
         queueNotif(nfContainer, 'Daynara está online agora…', 0, audio, 1600);
         queueNotif(nfContainer, 'Redirecionando você para o WhatsApp dela…', 1400, audio, 1400);
       }, afterStack);
-    
-      // Redirecionamento
+
       const redirectAt = afterStack + 1400 + 1600;
       setTimeout(()=>{ window.location.href = WA_URL; }, redirectAt);
     }
 
-    pegarNumeroWebhook().then(numero => {
-      console.log("numerooo: ", numero)
-  if (!numero) return console.error('Não foi possível obter o número do webhook');
-
-  // Monta a URL do WhatsApp com o número recebido
-  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-  const text  = encodeURIComponent(randomMessage);
-  WA_URL = `https://wa.me/55${numero}?text=${text}`;
-
-  // Atualiza a função de redirecionamento da sequência
-  window.redirectToWA = () => { window.location.href = WA_URL; };
-});
-
-    
-  window.addEventListener('load', runIntroSequence);
+    window.addEventListener('load', runIntroSequence);
   </script>
 </body>
 
